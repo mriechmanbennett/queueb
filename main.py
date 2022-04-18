@@ -67,14 +67,14 @@ async def ping(ctx):
 @bot.command()
 async def join(ctx):
     if ctx.author in lobbyQueue:
-        await ctx.send(str(ctx.author) + ' is already in queue')
+        await ctx.send('```' + str(ctx.author) + ' is already in queue```')
     else:
         lobbyQueue.append(ctx.author)
-        await ctx.send(str(ctx.author) + ' has joined the queue')
+        await ctx.send('```[' + str(len(lobbyQueue)) + '/10] ' + str(ctx.author) + ' has joined the queue```')
 
 
 @bot.command()
-async def q(ctx):
+async def queue(ctx):
     lobbyPrint = lobbyToString(lobbyQueue)
     await ctx.send(lobbyPrint)
 
@@ -83,9 +83,36 @@ async def q(ctx):
 async def leave(ctx):
     if ctx.author in lobbyQueue:
         lobbyQueue.remove(ctx.author)
-        await ctx.send(str(ctx.author) + ' has left the queue')
+        await ctx.send('```[' + str(len(lobbyQueue)) + '/10] ' + str(ctx.author) + ' has left the queue```')
     else:
-        await ctx.send('You were not in queue')
+        await ctx.send('```' + str(ctx.author) + ' was not in queue```')
+
+
+@bot.command()
+async def clear(ctx):
+    lobbyQueue.clear()
+    await ctx.send('```[0/10] The queue has been cleared```')
+
+
+# Commands to enable aliases to the above bot commands
+@bot.command()
+async def j(ctx):
+    await join(ctx)
+
+
+@bot.command()
+async def q(ctx):
+    await queue(ctx)
+
+
+@bot.command()
+async def l(ctx):
+    await leave(ctx)
+
+
+@bot.command()
+async def c(ctx):
+    await clear(ctx)
 
 
 bot.run(secret)
