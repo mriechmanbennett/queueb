@@ -15,12 +15,6 @@ def getSecret():
     return fileString
 
 
-# function to initialize queue
-
-# function to join the queue
-
-# function to leave the queue
-
 # function to turn the lobby list into a string for printing
 def playerListStr(pQueue):
     playerListString = ''
@@ -28,13 +22,11 @@ def playerListStr(pQueue):
         playerListString += str(item) + '\n'
     return playerListString
 
+
 # function to print the lobby queue
 def lobbyToString(pQueue):
     lobbyMarkdownString = ('```Lobby Queue [' + str(len(pQueue)) + '/10]\n' + str(playerListStr(pQueue)) + '```')
     return lobbyMarkdownString
-
-
-# function to clear the queue (admin only)
 
 
 ##########################################
