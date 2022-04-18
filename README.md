@@ -1,5 +1,5 @@
 # queueb
-A 10 man queue bot for discord
+An open source 10 man queue bot for discord. The others are either irritating to set up, cost money, or are deprecated.
 
 The priorities of this project are for it to be free, easy to set up, well documented, and functional.
 
