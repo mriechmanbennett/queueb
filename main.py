@@ -4,6 +4,19 @@ from discord.ext import commands
 import os
 
 
+# This is a very hacky custom help menu. This will need improvement when the bot matures
+class CustomHelpCommand(commands.HelpCommand):
+    def __init__(self):
+        super().__init__()
+
+    async def send_bot_help(self, mapping):
+        for cog in mapping:
+            await self.get_destination().send('```;register\t-\tRegister with the bot\n;join\t-\tJoin the '
+                                              'queue\n;leave\t-\tLeave the queue\n;queue\t-\tSee who is currently in '
+                                              'queue\n;clear\t-\tClear all players from the queue```')
+        return await super().send_bot_help(mapping)
+
+
 # retrieves the secret key from another directory outside the repo.
 # temporary fix until I spend time to learn a better way
 def getSecret():
@@ -39,8 +52,8 @@ secret = getSecret()
 gameQueue = []
 lobbyQueue = []
 
-# Initializes the bot with the command prefix ;
-bot = commands.Bot(command_prefix=';')
+# Initializes the bot with the command prefix ; and the custom help command
+bot = commands.Bot(command_prefix=';', help_command=CustomHelpCommand())
 
 
 @bot.event
