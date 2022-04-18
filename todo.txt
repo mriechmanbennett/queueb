@@ -1,0 +1,19 @@
+-refactor to remove global variables for lobby and game queues
+-convert lobby and game queues to dictionaries with the username
+	as key and the time they joined the queue as value
+-refactor to have commands separated into cogs that are loaded by the main
+-give the CustomHelpCommand class its own file that is imported to main
+-write a startup script
+-write a test function to allow adding dummy users to the queue
+-consider using true user id instead of user name, and deriving the uname
+	from the id when a print function is executed on the queue
+	This would protect against nitro users exploiting username
+	changes.
+-consider making a custom queue class for the project
+
+REGISTRATION:
+-store user registration in a pickle file, leave fields for elo and game wins
+-do checks for registration when a player attempts to join the queue
+
+MOD COMMANDS:
+-either store a pickle file with mod user ids, or rely on a mod role

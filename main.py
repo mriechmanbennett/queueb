@@ -152,6 +152,6 @@ async def c(ctx):
     await clear(ctx)
 
 
-# Runs the bot with the secret key that was obtained previously
+# Runs the bot with the secret key that was obtained previously, then clears the secret variable
 bot.run(secret)
 secret = 'no secret'
