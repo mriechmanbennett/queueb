@@ -18,12 +18,16 @@ def getSecret():
     return fileString
 
 
+def makeGame(lobbyQueue):
+    # make a new game, will eventually gen numbers
+    newGame = Game(lobbyQueue, 0)
+    return newGame
+
+
 # pops the queue to make a game lobby. Should be agnostic of how many players are in the lobby, to allow a manual pop
 # returns the new game as a game object
-
 def popQueue(lobbyQueue):
-    # make a new game
-    newGame = Game(lobbyQueue, 0)
+    newGame = makeGame(lobbyQueue)
     return newGame
 
 
@@ -102,7 +106,7 @@ def main():
 
             if len(lobbyQueue) > 9:
                 newGame = popQueue(lobbyQueue)  # Code to pop queue if there are 10 players in queue
-                activeGames.append(newGame)  # adds this game to the active games list
+                activeGames.update({newGame.getID(): newGame})  # adds this game to the active games list
                 # notify players that the queue has popped
                 await ctx.channel.send('```The game is ready!\nCaptains will now pick teams```')
                 # A spam notification could be annoying, leaving it off for now unless there's a problem of people not
