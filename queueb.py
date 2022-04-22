@@ -4,6 +4,7 @@ from discord.ext import commands
 import os
 from CustomHelp import CustomHelpCommand
 import datetime
+from game import Game
 
 
 # retrieves the secret key from another directory outside the repo.
@@ -15,6 +16,15 @@ def getSecret():
     secretFile.close()
     os.chdir('queueb')
     return fileString
+
+
+# pops the queue to make a game lobby. Should be agnostic of how many players are in the lobby, to allow a manual pop
+# returns the new game as a game object
+
+def popQueue(lobbyQueue):
+    # make a new game
+    newGame = Game(lobbyQueue, 0)
+    return newGame
 
 
 # function to turn a list or dictionary of players into a string for printing
@@ -50,8 +60,8 @@ def main():
     ############################################
 
     # Initializes the game queue and the lobby queue variables
-    gameQueue = []
-    lobbyQueue = {}
+    activeGames = {}  # dictionary with gameID as key and game object as value
+    lobbyQueue = {}  # Dictionary with player id as key and time they joined queue as value
 
     @bot.event
     async def on_ready():
@@ -89,6 +99,19 @@ def main():
         else:
             lobbyQueue.update({ctx.author: datetime.datetime.now()})
             await ctx.send('```[' + str(len(lobbyQueue)) + '/10] ' + str(ctx.author) + ' has joined the queue```')
+
+            if len(lobbyQueue) > 9:
+                newGame = popQueue(lobbyQueue)  # Code to pop queue if there are 10 players in queue
+                activeGames.append(newGame)  # adds this game to the active games list
+                # notify players that the queue has popped
+                await ctx.channel.send('```The game is ready!\nCaptains will now pick teams```')
+                # A spam notification could be annoying, leaving it off for now unless there's a problem of people not
+                # showing.
+                # for player in newGame.getPlayerList():
+                    # await ctx.channel.send(f"{player.mention}")
+                captainList = newGame.returnCaptains()
+                await ctx.channel.send('```Captain 1 - ' + str(captainList[0]) + '\nCaptain 2 - ' + str(captainList[1])
+                                       + '```')
 
     @bot.command()
     async def queue(ctx):
