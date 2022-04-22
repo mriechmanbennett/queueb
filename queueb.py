@@ -3,6 +3,7 @@ import discord
 from discord.ext import commands
 import os
 from CustomHelp import CustomHelpCommand
+import datetime
 
 
 # retrieves the secret key from another directory outside the repo.
@@ -16,7 +17,7 @@ def getSecret():
     return fileString
 
 
-# function to turn a list of players into a string for printing
+# function to turn a list or dictionary of players into a string for printing
 def playerListStr(pQueue):
     playerListString = ''
     for item in pQueue:
@@ -36,10 +37,6 @@ def gameToString(pQueue, gameID):
 
 
 def main():
-
-    # Retrieves secret key from the outside file
-    secret = getSecret()
-
     # Initializes the bot with the command prefix ; and the custom help command
     bot = commands.Bot(command_prefix=';', help_command=CustomHelpCommand())
 
@@ -49,12 +46,12 @@ def main():
             bot.load_extension(f'cogs.{filename[:-3]}')
 
     ############################################
-    # Secret Management and Bot Initialization:
+    # Bot Initialization:
     ############################################
 
     # Initializes the game queue and the lobby queue variables
     gameQueue = []
-    lobbyQueue = []
+    lobbyQueue = {}
 
     @bot.event
     async def on_ready():
@@ -90,9 +87,8 @@ def main():
         if ctx.author in lobbyQueue:
             await ctx.send('```' + str(ctx.author) + ' is already in queue```')
         else:
-            lobbyQueue.append(ctx.author)
+            lobbyQueue.update({ctx.author: datetime.datetime.now()})
             await ctx.send('```[' + str(len(lobbyQueue)) + '/10] ' + str(ctx.author) + ' has joined the queue```')
-        return lobbyQueue
 
     @bot.command()
     async def queue(ctx):
@@ -102,7 +98,7 @@ def main():
     @bot.command()
     async def leave(ctx):
         if ctx.author in lobbyQueue:
-            lobbyQueue.remove(ctx.author)
+            lobbyQueue.pop(ctx.author)
             await ctx.send('```[' + str(len(lobbyQueue)) + '/10] ' + str(ctx.author) + ' has left the queue```')
         else:
             await ctx.send('```' + str(ctx.author) + ' was not in queue```')
@@ -130,10 +126,12 @@ def main():
     async def l(ctx):
         await leave(ctx)
 
+    # Mod Aliases
     @bot.command()
     async def c(ctx):
         await clear(ctx)
 
+    # User accessible commands for cog management. Unneeded, but left here for future reference
     # @bot.command()
     # async def load(ctx, extension):
     #     bot.load_extension(f'cogs.{extension}')
@@ -146,6 +144,9 @@ def main():
     # async def reload(ctx, extension):
     #     bot.unload_extension(f'cogs.{extension})')
     #     bot.load_extension(f'cogs.{extension}')
+
+    # Retrieves secret key from the outside file
+    secret = getSecret()
 
     # Runs the bot with the secret key that was obtained previously, then clears the secret variable
     bot.run(secret)
