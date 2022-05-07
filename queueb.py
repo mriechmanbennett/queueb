@@ -18,16 +18,30 @@ def getSecret():
     return fileString
 
 
-def makeGame(lobbyQueue):
+def makeGame(bot):
     # make a new game, will eventually gen numbers
-    newGame = Game(lobbyQueue, 0)
+    newGame = Game(bot.lobbyQueue, 0)
     return newGame
 
 
 # pops the queue to make a game lobby. Should be agnostic of how many players are in the lobby, to allow a manual pop
 # returns the new game as a game object
-def popQueue(lobbyQueue):
-    newGame = makeGame(lobbyQueue)
+async def popQueue(bot, ctx):
+    newGame = makeGame(bot)
+
+    bot.activeGames.update({newGame.getID(): newGame})  # adds this game to the active games dict with game id as key
+    # notify players that the queue has popped
+    await ctx.channel.send('```The game is ready!\nCaptains will now pick teams```')
+    # A spam notification could be annoying, leaving it off for now unless there's a problem of people not showing.
+    # for player in newGame.getPlayerList():
+        # await ctx.channel.send(f"{player.mention}")
+    captainList = newGame.returnCaptains()
+    print(captainList)
+    try:
+        await ctx.channel.send('```Captain 1 - ' + str(captainList[0]) + '\nCaptain 2 - ' + str(captainList[1]) + '```')
+    except IndexError:
+        await ctx.channel.send('```Queue pop failed, dumping lobby queue```')
+        bot.lobbyQueue = {}
     return newGame
 
 
@@ -64,8 +78,8 @@ def main():
     ############################################
 
     # Initializes the game queue and the lobby queue variables
-    activeGames = {}  # dictionary with gameID as key and game object as value
-    lobbyQueue = {}  # Dictionary with player id as key and time they joined queue as value
+    bot.activeGames = {}  # dictionary with gameID as key and game object as value
+    bot.lobbyQueue = {}  # Dictionary with player id as key and time they joined queue as value
 
     @bot.event
     async def on_ready():
@@ -98,35 +112,25 @@ def main():
     ###############################################
     @bot.command()
     async def join(ctx):
-        if ctx.author in lobbyQueue:
+        if ctx.author in bot.lobbyQueue:
             await ctx.send('```' + str(ctx.author) + ' is already in queue```')
         else:
-            lobbyQueue.update({ctx.author: datetime.datetime.now()})
-            await ctx.send('```[' + str(len(lobbyQueue)) + '/10] ' + str(ctx.author) + ' has joined the queue```')
+            bot.lobbyQueue.update({ctx.author: datetime.datetime.now()})
+            await ctx.send('```[' + str(len(bot.lobbyQueue)) + '/10] ' + str(ctx.author) + ' has joined the queue```')
 
-            if len(lobbyQueue) > 9:
-                newGame = popQueue(lobbyQueue)  # Code to pop queue if there are 10 players in queue
-                activeGames.update({newGame.getID(): newGame})  # adds this game to the active games list
-                # notify players that the queue has popped
-                await ctx.channel.send('```The game is ready!\nCaptains will now pick teams```')
-                # A spam notification could be annoying, leaving it off for now unless there's a problem of people not
-                # showing.
-                # for player in newGame.getPlayerList():
-                    # await ctx.channel.send(f"{player.mention}")
-                captainList = newGame.returnCaptains()
-                await ctx.channel.send('```Captain 1 - ' + str(captainList[0]) + '\nCaptain 2 - ' + str(captainList[1])
-                                       + '```')
+            if len(bot.lobbyQueue) > 9:
+                newGame = await popQueue(bot, ctx)  # Code to pop queue if there are 10 players in queue
 
     @bot.command()
     async def queue(ctx):
-        lobbyPrint = lobbyToString(lobbyQueue)
+        lobbyPrint = lobbyToString(bot.lobbyQueue)
         await ctx.send(lobbyPrint)
 
     @bot.command()
     async def leave(ctx):
-        if ctx.author in lobbyQueue:
-            lobbyQueue.pop(ctx.author)
-            await ctx.send('```[' + str(len(lobbyQueue)) + '/10] ' + str(ctx.author) + ' has left the queue```')
+        if ctx.author in bot.lobbyQueue:
+            bot.lobbyQueue.pop(ctx.author)
+            await ctx.send('```[' + str(len(bot.lobbyQueue)) + '/10] ' + str(ctx.author) + ' has left the queue```')
         else:
             await ctx.send('```' + str(ctx.author) + ' was not in queue```')
 
@@ -135,8 +139,12 @@ def main():
     ##########################
     @bot.command()
     async def clear(ctx):
-        lobbyQueue.clear()
+        bot.lobbyQueue.clear()
         await ctx.send('```[0/10] The queue has been cleared```')
+
+    @bot.command()
+    async def forcePop(ctx):
+        newGame = await popQueue(bot, ctx)
 
     #######################################################
     # Commands to enable aliases to the above bot commands

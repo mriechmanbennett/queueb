@@ -29,7 +29,7 @@ class Game:
     def pickCaptains(self):
         captainList = []
         try:
-            indexList = random.sample(range(0, len(self.__playerList) - 1), 2)
+            indexList = random.sample(range(0, len(self.__playerList)), 2)
             for i in indexList:
                 captainList.append(self.__playerList[i])
         except ValueError:
