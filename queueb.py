@@ -36,12 +36,15 @@ async def popQueue(bot, ctx):
     # for player in newGame.getPlayerList():
         # await ctx.channel.send(f"{player.mention}")
     captainList = newGame.returnCaptains()
-    print(captainList)
     try:
         await ctx.channel.send('```Captain 1 - ' + str(captainList[0]) + '\nCaptain 2 - ' + str(captainList[1]) + '```')
     except IndexError:
         await ctx.channel.send('```Queue pop failed, dumping lobby queue```')
         bot.lobbyQueue = {}
+    gameLobbyString = gameToString(newGame.getPlayerList(), newGame.getID())
+    await ctx.channel.send(gameLobbyString)
+    bot.lobbyQueue.clear()
+
     return newGame
 
 
@@ -62,6 +65,7 @@ def lobbyToString(pQueue):
 # function to print the game and players
 def gameToString(pQueue, gameID):
     gameMarkdownString = ('```Game #' + str(gameID) + '\n' + str(playerListStr(pQueue) + '```'))
+    return gameMarkdownString
 
 
 def main():
@@ -137,10 +141,10 @@ def main():
     ##########################
     # Mod commands - in the future will be accessible only to mods
     ##########################
-    @bot.command()
-    async def clear(ctx):
-        bot.lobbyQueue.clear()
-        await ctx.send('```[0/10] The queue has been cleared```')
+    # @bot.command()
+    # async def clear(ctx):
+    #     bot.lobbyQueue.clear()
+    #     await ctx.send('```[0/10] The queue has been cleared```')
 
     @bot.command()
     async def forcePop(ctx):
