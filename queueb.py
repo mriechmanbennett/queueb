@@ -30,20 +30,18 @@ async def popQueue(bot, ctx):
     newGame = makeGame(bot)
 
     bot.activeGames.update({newGame.getID(): newGame})  # adds this game to the active games dict with game id as key
+    captainList = newGame.returnCaptains()
+    gameLobbyString = gameToString(newGame.getPlayerList(), newGame.getID())
+    bot.lobbyQueue.clear()
+
     # notify players that the queue has popped
     await ctx.channel.send('```The game is ready!\nCaptains will now pick teams```')
-    # A spam notification could be annoying, leaving it off for now unless there's a problem of people not showing.
-    # for player in newGame.getPlayerList():
-        # await ctx.channel.send(f"{player.mention}")
-    captainList = newGame.returnCaptains()
     try:
         await ctx.channel.send('```Captain 1 - ' + str(captainList[0]) + '\nCaptain 2 - ' + str(captainList[1]) + '```')
     except IndexError:
         await ctx.channel.send('```Queue pop failed, dumping lobby queue```')
         bot.lobbyQueue = {}
-    gameLobbyString = gameToString(newGame.getPlayerList(), newGame.getID())
     await ctx.channel.send(gameLobbyString)
-    bot.lobbyQueue.clear()
 
     return newGame
 
