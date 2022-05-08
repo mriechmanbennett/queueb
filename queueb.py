@@ -90,6 +90,7 @@ def main():
         print('Bot is ready')
 
     @bot.command()
+    @commands.has_any_role('10s Admin')
     async def ping(ctx):
         await ctx.send('Pong!')
 
@@ -103,11 +104,13 @@ def main():
 
     # Command to view current top of the leaderboard
     @bot.command()
+    @commands.has_any_role('10s Admin')
     async def leaderboard(ctx):
         await ctx.send('```leaderboard formatted here```')
 
     # Command to view current elo and standings
     @bot.command()
+    @commands.has_any_role('10s Admin')
     async def elo(ctx):
         await ctx.send('```your elo and leaderboard standings here```')
 
@@ -141,12 +144,14 @@ def main():
     ##########################
     # Mod commands - in the future will be accessible only to mods
     ##########################
-    # @bot.command()
-    # async def clear(ctx):
-    #     bot.lobbyQueue.clear()
-    #     await ctx.send('```[0/10] The queue has been cleared```')
+    @bot.command()
+    @commands.has_any_role('10s Mod', '10s Admin', 'Team Captain R6')
+    async def clear(ctx):
+        bot.lobbyQueue.clear()
+        await ctx.send('```[0/10] The queue has been cleared```')
 
     @bot.command()
+    @commands.has_any_role('10s Admin')
     async def forcePop(ctx):
         newGame = await popQueue(bot, ctx)
 
@@ -167,6 +172,7 @@ def main():
 
     # Mod Aliases
     @bot.command()
+    @commands.has_any_role('10s Mod', '10s Admin', 'Team Captain R6')
     async def c(ctx):
         await clear(ctx)
 
