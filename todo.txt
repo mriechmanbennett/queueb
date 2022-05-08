@@ -1,6 +1,6 @@
 -refactor to have commands separated into cogs that are loaded by the main
 -improve the CustomHelpCommand implementation so it's not a static return
--write a startup script
+-write a startup/monitoring script to keep bot up/restart it after reboots
 -write a test function to allow adding dummy users to the queue
 -consider using true user id instead of user name, and deriving the uname
 	from the id when a print function is executed on the queue
@@ -16,5 +16,13 @@ REGISTRATION:
 
 MOD COMMANDS:
 -put mod commands in a cog, reliant on the mod role in bro league server
--implement admin privileged commands to dump queues, edit values for past games without manual intervention
+-implement unpop queue to restore lobby
+-remove individual player from queue
 
+-banned list?
+
+-learn how to use the issues tab on github because that seems better for this
+
+
+Notes:
+-established testing branch to keep separate from the main that is in use on the pi server
