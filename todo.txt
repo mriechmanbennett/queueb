@@ -1,6 +1,5 @@
 high priority:
 queue time-outs, 20-30 minutes
-@ everyone in the lobby
 
 -refactor to have commands separated into cogs that are loaded by the main
 -improve the CustomHelpCommand implementation so it's not a static return

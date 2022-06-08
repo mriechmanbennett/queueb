@@ -36,9 +36,12 @@ async def popQueue(bot, ctx):
 
     # notify players that the queue has popped
     try:
-        await ctx.channel.send('```Captain 1 - ' + str(captainList[0]) + '\nCaptain 2 - ' + str(captainList[1]) + '```')
         await ctx.channel.send('```The game is ready!\nCaptains will now pick teams```')
+        await ctx.channel.send('```Captain 1 - ' + str(captainList[0]) + '\nCaptain 2 - ' + str(captainList[1]) + '```')
         await ctx.channel.send(gameLobbyString)
+        for player in newGame.getPlayerList():
+            await ctx.channel.send(player.mention)
+
     except IndexError:
         await ctx.channel.send('```Queue pop failed, dumping lobby queue```')
         bot.lobbyQueue = {}
