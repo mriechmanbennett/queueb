@@ -1,6 +1,5 @@
 high priority:
 queue time-outs, 20-30 minutes
-capital letter commands
 @ everyone in the lobby
 
 -refactor to have commands separated into cogs that are loaded by the main
@@ -30,3 +29,4 @@ MOD COMMANDS:
 
 Notes:
 -established testing branch to keep separate from the main that is in use on the pi server
+-asyncio.ensure_future() seems like the answer to my queue timeout problem

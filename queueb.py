@@ -35,13 +35,13 @@ async def popQueue(bot, ctx):
     bot.lobbyQueue.clear()
 
     # notify players that the queue has popped
-    await ctx.channel.send('```The game is ready!\nCaptains will now pick teams```')
     try:
         await ctx.channel.send('```Captain 1 - ' + str(captainList[0]) + '\nCaptain 2 - ' + str(captainList[1]) + '```')
+        await ctx.channel.send('```The game is ready!\nCaptains will now pick teams```')
+        await ctx.channel.send(gameLobbyString)
     except IndexError:
         await ctx.channel.send('```Queue pop failed, dumping lobby queue```')
         bot.lobbyQueue = {}
-    await ctx.channel.send(gameLobbyString)
 
     return newGame
 
@@ -92,10 +92,17 @@ def main():
     async def ping(ctx):
         await ctx.send('Pong!')
 
+    ############################################
+    # Queue timeout:
+    ############################################
+
+
+
     #################################################
     # commands related to registration and standings
     #################################################
     # Command to register for the ten mans
+
     @bot.command()
     async def register(ctx):
         await ctx.send('```User registration under development. Use ;join to join the queue```')
@@ -154,7 +161,7 @@ def main():
         newGame = await popQueue(bot, ctx)
 
     #######################################################
-    # Commands to enable aliases to the above bot commands
+    # Commands to enable aliases to the above bot commands, both lowercase and capital
     #######################################################
     @bot.command()
     async def j(ctx):
@@ -166,6 +173,18 @@ def main():
 
     @bot.command()
     async def l(ctx):
+        await leave(ctx)
+
+    @bot.command()
+    async def J(ctx):
+        await join(ctx)
+
+    @bot.command()
+    async def Q(ctx):
+        await queue(ctx)
+
+    @bot.command()
+    async def L(ctx):
         await leave(ctx)
 
     # Mod Aliases
