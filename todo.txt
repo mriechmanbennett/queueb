@@ -1,29 +1,33 @@
-high priority:
-queue time-outs, 20-30 minutes
+HIGH PRIORITY:
+	-queue time-outs, 20-30 minutes
 
--refactor to have commands separated into cogs that are loaded by the main
--improve the CustomHelpCommand implementation so it's not a static return
--write a startup/monitoring script to keep bot up/restart it after reboots
--write a test function to allow adding dummy users to the queue
--consider using true user id instead of user name, and deriving the uname
-	from the id when a print function is executed on the queue
-	This would protect against nitro users exploiting username
-	changes.
--fix async-related problem of the same queue popping multiple times
--implement match and player tracking to store wins in preparation for elo implementation
+	-refactor to have commands separated into cogs that are loaded by the main
+	-improve the CustomHelpCommand implementation so it's not a static return
+	-write a startup/monitoring script to keep bot up/restart it after reboots
+	-consider using true user id instead of user name, and deriving the uname from the id when a print function is executed on the queue. This would protect against nitro users exploiting username changes.
+	-fix async-related problem of the same queue popping multiple times
+	-implement match and player tracking to store wins in preparation for elo implementation
 
 REGISTRATION:
--store user registration in a pickle file, leave fields for elo and game wins
--do checks for registration when a player attempts to join the queue
+	-store user registration in a pickle file, leave fields for elo and game wins
+	-do checks for registration when a player attempts to join the queue
 
 MOD COMMANDS:
--put mod commands in a cog, reliant on the mod role in bro league server
--implement unpop queue to restore lobby
--remove individual player from queue
-
--banned list?
+	-put mod commands in a cog, reliant on the mod role in bro league server
+	-implement unpop queue to restore lobby
+	-remove individual player from queue/game
+		-corollary: allow individual player added to queue/game
+	-banned list?
 
 -learn how to use the issues tab on github because that seems better for this
+
+TESTING:
+	-maybe write a second bot with a command to join it to the queue?
+	-produce additional test functions
+	-lock test functions behind admin role, probably in a separate cog
+		-forcePop is a good example
+		-consider excluding test functions from main builds, but idk how
+	-write a test function to allow adding dummy users to the queue
 
 
 Notes:
