@@ -33,3 +33,8 @@ TESTING:
 Notes:
 -established testing branch to keep separate from the main that is in use on the pi server
 -asyncio.ensure_future() seems like the answer to my queue timeout problem
+
+New features since last update:
+	-capital letters
+	-@s all players when pops. spammy, but maybe good?
+	-minor backend improvements
