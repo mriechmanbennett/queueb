@@ -1,3 +1,8 @@
+high priority:
+queue time-outs, 20-30 minutes
+capital letter commands
+@ everyone in the lobby
+
 -refactor to have commands separated into cogs that are loaded by the main
 -improve the CustomHelpCommand implementation so it's not a static return
 -write a startup/monitoring script to keep bot up/restart it after reboots
@@ -7,7 +12,6 @@
 	This would protect against nitro users exploiting username
 	changes.
 -fix async-related problem of the same queue popping multiple times
--implement captain-pick teams
 -implement match and player tracking to store wins in preparation for elo implementation
 
 REGISTRATION:
