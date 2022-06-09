@@ -39,8 +39,8 @@ async def popQueue(bot, ctx):
         await ctx.channel.send('```The game is ready!\nCaptains will now pick teams```')
         await ctx.channel.send('```Captain 1 - ' + str(captainList[0]) + '\nCaptain 2 - ' + str(captainList[1]) + '```')
         await ctx.channel.send(gameLobbyString)
-        for player in newGame.getPlayerList():
-            await ctx.channel.send(player.mention)
+        for player in newGame.getPlayerList():  # For loop to dm each player to notify them that the queue has popped
+            await player.send("The Bro League 10 man queue has popped, please join a voice channel.")
 
     except IndexError:
         await ctx.channel.send('```Queue pop failed, dumping lobby queue```')
@@ -94,6 +94,13 @@ def main():
     @commands.has_any_role('10s Admin')
     async def ping(ctx):
         await ctx.send('Pong!')
+
+    @bot.event
+    async def on_message(message):
+        try:
+            await message.author.send("This bot's dms are not monitored.")
+        except discord.errors.HTTPException:
+            print("DNR response error")
 
     ############################################
     # Queue timeout:

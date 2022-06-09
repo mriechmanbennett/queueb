@@ -36,5 +36,5 @@ Notes:
 
 New features since last update:
 	-capital letters
-	-@s all players when pops. spammy, but maybe good?
+	-bot dms all players when the queue has popped. a little less spammythan a mass @ in the 10s channel
 	-minor backend improvements
