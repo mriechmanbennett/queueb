@@ -3,7 +3,7 @@ import discord
 from discord.ext import commands
 import os
 from CustomHelp import CustomHelpCommand
-import datetime
+import time
 from game import Game
 
 
@@ -95,12 +95,13 @@ def main():
     async def ping(ctx):
         await ctx.send('Pong!')
 
-    @bot.event
-    async def on_message(message):
-        try:
-            await message.author.send("This bot's dms are not monitored.")
-        except discord.errors.HTTPException:
-            print("DNR response error")
+    # @bot.event
+    # async def on_message(message):
+    #     if message.channel.type == 'dm':
+    #         try:
+    #             await message.author.send("This bot's dms are not monitored.")
+    #         except discord.errors.HTTPException:
+    #             print("DNR response error")
 
     ############################################
     # Queue timeout:
@@ -137,9 +138,9 @@ def main():
         if ctx.author in bot.lobbyQueue:
             await ctx.send('```' + str(ctx.author) + ' is already in queue```')
         else:
-            bot.lobbyQueue.update({ctx.author: datetime.datetime.now()})
+            bot.lobbyQueue.update({ctx.author: time.time()})
             await ctx.send('```[' + str(len(bot.lobbyQueue)) + '/10] ' + str(ctx.author) + ' has joined the queue```')
-
+            print(time.time())
             if len(bot.lobbyQueue) > 9:
                 newGame = await popQueue(bot, ctx)  # Code to pop queue if there are 10 players in queue
 
