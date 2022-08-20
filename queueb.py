@@ -100,7 +100,7 @@ def main():
     bot.activeGames = {}  # dictionary with gameID as key and game object as value
     bot.lobbyQueue = {}  # Dictionary with player id as key and time they joined queue as value
     bot.kickTimer = 21600.0  # default value for the afk timer, in seconds
-    bot.lastReleaseVersion = "v0.2.1"  # bot release build number
+    bot.lastReleaseVersion = "v0.3.0"  # bot release build number
     dumpQueueTime = "07:00:00"  # Time of day to dump the queue
 
     @bot.event
