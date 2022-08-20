@@ -1,10 +1,12 @@
 # Main
 import discord
+from discord.ext import tasks
 from discord.ext import commands
 import os
 from CustomHelp import CustomHelpCommand
 import time
 from game import Game
+from datetime import datetime
 
 
 # retrieves the secret key from another directory outside the repo.
@@ -49,6 +51,18 @@ async def popQueue(bot, ctx):
     return newGame
 
 
+# Takes a dictionary of playerIDs : queue times, removes players in queue for over two hours,
+# and returns the dictionary with players removed
+def checkQueueTimes(queueDict, timeout):
+    removeList = []
+    for player in queueDict:
+        if (time.time() - queueDict[player]) > timeout:
+            removeList.append(player)
+    for player in removeList:
+        queueDict.pop(player)
+    return removeList
+
+
 # function to turn a list or dictionary of players into a string for printing
 def playerListStr(pQueue):
     playerListString = ''
@@ -85,29 +99,34 @@ def main():
     # Initializes the game queue and the lobby queue variables
     bot.activeGames = {}  # dictionary with gameID as key and game object as value
     bot.lobbyQueue = {}  # Dictionary with player id as key and time they joined queue as value
+    bot.kickTimer = 21600.0  # default value for the afk timer, in seconds
+    bot.lastReleaseVersion = "v0.2.1"  # bot release build number
+    dumpQueueTime = "07:00:00"  # Time of day to dump the queue
 
     @bot.event
     async def on_ready():
         print('Bot is ready')
+        if not queueTaskScheduler.is_running():
+            queueTaskScheduler.start()
 
     @bot.command()
     @commands.has_any_role('10s Admin')
     async def ping(ctx):
         await ctx.send('Pong!')
 
-    # @bot.event
-    # async def on_message(message):
-    #     if message.channel.type == 'dm':
-    #         try:
-    #             await message.author.send("This bot's dms are not monitored.")
-    #         except discord.errors.HTTPException:
-    #             print("DNR response error")
-
     ############################################
     # Queue timeout:
     ############################################
 
-
+    @tasks.loop(seconds=1.0)
+    async def queueTaskScheduler():
+        kickList = checkQueueTimes(bot.lobbyQueue, bot.kickTimer)
+        for player in kickList:
+            await player.send("You have been removed from queue for inactivity.")
+        now = datetime.now()
+        current_time = now.strftime("%H:%M:%S")
+        if current_time == dumpQueueTime:
+            bot.lobbyQueue.clear()
 
     #################################################
     # commands related to registration and standings
@@ -115,6 +134,7 @@ def main():
     # Command to register for the ten mans
 
     @bot.command()
+    @commands.has_any_role('10s Admin')
     async def register(ctx):
         await ctx.send('```User registration under development. Use ;join to join the queue```')
 
@@ -134,22 +154,25 @@ def main():
     # commands related to user access to the queue
     ###############################################
     @bot.command()
+    @commands.guild_only()
     async def join(ctx):
         if ctx.author in bot.lobbyQueue:
-            await ctx.send('```' + str(ctx.author) + ' is already in queue```')
+            await ctx.send('```' + str(ctx.author) + ' is already in queue, time in queue has been updated```')
+            bot.lobbyQueue[ctx.author] = time.time()
         else:
             bot.lobbyQueue.update({ctx.author: time.time()})
             await ctx.send('```[' + str(len(bot.lobbyQueue)) + '/10] ' + str(ctx.author) + ' has joined the queue```')
-            print(time.time())
             if len(bot.lobbyQueue) > 9:
                 newGame = await popQueue(bot, ctx)  # Code to pop queue if there are 10 players in queue
 
     @bot.command()
+    @commands.guild_only()
     async def queue(ctx):
         lobbyPrint = lobbyToString(bot.lobbyQueue)
         await ctx.send(lobbyPrint)
 
     @bot.command()
+    @commands.guild_only()
     async def leave(ctx):
         if ctx.author in bot.lobbyQueue:
             bot.lobbyQueue.pop(ctx.author)
@@ -161,12 +184,14 @@ def main():
     # Mod commands - in the future will be accessible only to mods
     ##########################
     @bot.command()
+    @commands.guild_only()
     @commands.has_any_role('10s Mod', '10s Admin', 'Team Captain R6')
     async def clear(ctx):
         bot.lobbyQueue.clear()
         await ctx.send('```[0/10] The queue has been cleared```')
 
     @bot.command()
+    @commands.guild_only()
     @commands.has_any_role('10s Admin')
     async def forcePop(ctx):
         newGame = await popQueue(bot, ctx)
@@ -175,31 +200,38 @@ def main():
     # Commands to enable aliases to the above bot commands, both lowercase and capital
     #######################################################
     @bot.command()
+    @commands.guild_only()
     async def j(ctx):
         await join(ctx)
 
     @bot.command()
+    @commands.guild_only()
     async def q(ctx):
         await queue(ctx)
 
     @bot.command()
+    @commands.guild_only()
     async def l(ctx):
         await leave(ctx)
 
     @bot.command()
+    @commands.guild_only()
     async def J(ctx):
         await join(ctx)
 
     @bot.command()
+    @commands.guild_only()
     async def Q(ctx):
         await queue(ctx)
 
     @bot.command()
+    @commands.guild_only()
     async def L(ctx):
         await leave(ctx)
 
     # Mod Aliases
     @bot.command()
+    @commands.guild_only()
     @commands.has_any_role('10s Mod', '10s Admin', 'Team Captain R6')
     async def c(ctx):
         await clear(ctx)
