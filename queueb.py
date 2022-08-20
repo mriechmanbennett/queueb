@@ -109,11 +109,6 @@ def main():
         if not queueTaskScheduler.is_running():
             queueTaskScheduler.start()
 
-    @bot.command()
-    @commands.has_any_role('10s Admin')
-    async def ping(ctx):
-        await ctx.send('Pong!')
-
     ############################################
     # Queue timeout:
     ############################################
@@ -181,14 +176,42 @@ def main():
             await ctx.send('```' + str(ctx.author) + ' was not in queue```')
 
     ##########################
-    # Mod commands - in the future will be accessible only to mods
+    # Mod commands
     ##########################
     @bot.command()
     @commands.guild_only()
-    @commands.has_any_role('10s Mod', '10s Admin', 'Team Captain R6')
+    @commands.has_any_role('10s Mod', '10s Admin')
     async def clear(ctx):
         bot.lobbyQueue.clear()
         await ctx.send('```[0/10] The queue has been cleared```')
+
+    @bot.command()
+    @commands.guild_only()
+    @commands.has_any_role('10s Mod', '10s Admin')
+    async def remove(ctx, userName):
+        found = False
+        for user in bot.lobbyQueue:
+            if userName == str(user):
+                found = True
+                toRemove = user
+        if found:
+            try:
+                bot.lobbyQueue.pop(toRemove)
+                await queue(ctx)
+            except KeyError:
+                await ctx.send("```Remove failed - please report this as a bug```")
+        else:
+            await ctx.send("```" + userName + " was not found in queue. No one was removed.```")
+        found = False
+
+    ##########################
+    # Admin commands
+    ##########################
+
+    @bot.command()
+    @commands.has_any_role('10s Admin')
+    async def ping(ctx):
+        await ctx.send('Pong!')
 
     @bot.command()
     @commands.guild_only()
@@ -199,6 +222,7 @@ def main():
     #######################################################
     # Commands to enable aliases to the above bot commands, both lowercase and capital
     #######################################################
+
     @bot.command()
     @commands.guild_only()
     async def j(ctx):
@@ -236,6 +260,14 @@ def main():
     async def c(ctx):
         await clear(ctx)
 
+    @bot.command()
+    @commands.guild_only()
+    @commands.has_any_role('10s Mod', '10s Admin')
+    async def rm(ctx, userName):
+        await remove(ctx, userName)
+
+    # Admin Aliases
+
     # User accessible commands for cog management. Unneeded, but left here for future reference
     # @bot.command()
     # async def load(ctx, extension):
@@ -252,7 +284,6 @@ def main():
 
     # Retrieves secret key from the outside file
     secret = getSecret()
-
     # Runs the bot with the secret key that was obtained previously, then clears the secret variable
     bot.run(secret)
     secret = 'no secret'
