@@ -8,4 +8,4 @@ Include a text file named secret.txt that contains only your bot API key. It sho
 Execute queueb.py
 Add the bot to your server, and give it a role restricting it to just your 10s channel to avoid a lot of spam.
 
-Feel free to email me with any questions you may have.
+this code is such a mess lmao
