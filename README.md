@@ -9,3 +9,5 @@ Execute queueb.py
 Add the bot to your server, and give it a role restricting it to just your 10s channel to avoid a lot of spam.
 
 Feel free to email me with any questions you may have.
+
+This code is aggressively bad, I apologize in advance
